@@ -15,9 +15,12 @@ const handleSignup = async (req, res) => {
 
         const createUserResult = await User.create({ firstName, lastName, email, password: hashedPassword, salt })
 
-        // TODO: Generate JWT Token and send that
+        const token = lib.generateJwtToken({
+            userID: createUserResult._id,
+            email: createUserResult.email
+        });
 
-        return res.json({ status: 'success', data: { _id: createUserResult._id } })
+        return res.json({ status: 'success', data: { _id: createUserResult._id, token: token } });
 
     } catch (err) {
         if (err.code === 11000)
@@ -26,7 +29,31 @@ const handleSignup = async (req, res) => {
     }
 }
 
+const handleSignIn = async (req, res) => {
+    const { email, password } = req.body;
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(401).json({ error: `User with email ${email} not found!` });
+    }
+
+    const { hash } = lib.generatehash(password, user.salt);
+    if (hash !== user.password) {
+        return res.json({ message: `Incorrect email or password!` });
+    }
+
+    const token = lib.generateJwtToken({
+        userID: user._id,
+        email: user.email
+    });
+
+    return res.json({ 
+        status: 'success', 
+        data: { token: token } 
+    });
+}
 
 module.exports = {
-    handleSignup
+    handleSignup,
+    handleSignIn,
 }
