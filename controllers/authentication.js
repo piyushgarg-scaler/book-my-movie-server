@@ -24,7 +24,7 @@ const handleSignup = async (req, res) => {
 
     } catch (err) {
         if (err.code === 11000)
-            return res.status(400).json({ message: error.message })
+            return res.status(400).json({ message: err.message })
         return res.status(500).json({ message: 'Internal Server Error' })
     }
 }
