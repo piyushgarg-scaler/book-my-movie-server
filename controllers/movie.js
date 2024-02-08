@@ -11,6 +11,16 @@ const handleGetAllMovies = async (req, res) => {
     return res.json({ status: 'success', data: { page, movies } })
 }
 
+const handleGetMovieById = async (req, res) => {
+    const id = req.params.id
+    const movie = await Movie.findById(id);
+
+    if (!movie) return res.status(404).json({ status: 'success', data: null });
+
+    return res.json({ status: 'success', data: { movie } })
+
+}
+
 const handleCreateMovie = async (req, res) => {
     const safeParseResult = validateCreateMoviePayload(req.body)
 
@@ -31,4 +41,10 @@ const handleCreateMovie = async (req, res) => {
 
 }
 
-module.exports = { handleCreateMovie, handleGetAllMovies }
+const handleDeleteMovieById = async (req, res) => {
+    const id = req.params.id;
+    await Movie.findByIdAndDelete(id);
+    return res.json({ status: 'success', data: { deleted: true } })
+}
+
+module.exports = { handleCreateMovie, handleGetAllMovies, handleDeleteMovieById, handleGetMovieById }
