@@ -1,6 +1,16 @@
 const Theatre = require('../models/theatre')
 const { validateCreateTheatrePayload } = require('../lib/theatre')
 
+const handleGetAllTheaters = async (req, res) => {
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const LIMIT = 5;
+
+    const skip = (page - 1) * LIMIT
+    const theatres = await Theatre.find({}).skip(skip).limit(LIMIT)
+
+    return res.json({ status: 'success', data: { page, theatres } })
+}
+
 const handleCreateTheatre = async (req, res) => {
     const safeParseResult = validateCreateTheatrePayload(req.body)
 
@@ -16,4 +26,4 @@ const handleCreateTheatre = async (req, res) => {
 
 }
 
-module.exports = { handleCreateTheatre }
+module.exports = { handleCreateTheatre, handleGetAllTheaters }
