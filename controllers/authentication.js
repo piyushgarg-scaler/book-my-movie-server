@@ -26,7 +26,6 @@ const handleSignup = async (req, res) => {
     }
 }
 
-
 const handleSignin = async (req, res) => {
     const safeParseResult = lib.validateUserSignin(req.body);
 
