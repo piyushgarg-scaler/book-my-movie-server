@@ -45,15 +45,32 @@ const handleSignin = async (req, res) => {
 
     const { hash } = lib.generatehash(password, salt)
 
-    if (hash !== hashedPasswordDb) return res.status(404).json({ error: `Incorrect password` })
+    if (hash !== hashedPasswordDb) return res.status(400).json({ error: `Incorrect password` })
 
     const token = lib.generateUserToken({ _id: userInDb._id.toString(), role: userInDb.role })
 
     return res.json({ status: 'success', data: { token: token } })
 }
 
+const handleGetUserProfile = async (req, res) => {
+    const user = req.user;
+    if (!user) return res.json({ profile: null })
+
+    const userInDb = await User.findById(user._id)
+
+    return res.json({
+        profile: {
+            firstName: userInDb.firstName,
+            lastName: userInDb.lastName,
+            email: userInDb.email,
+            role: userInDb.role,
+        }
+    })
+}
+
 
 module.exports = {
     handleSignup,
     handleSignin,
+    handleGetUserProfile
 }

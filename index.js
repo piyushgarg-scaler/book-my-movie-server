@@ -2,6 +2,9 @@ require('dotenv').config()
 
 const express = require('express');
 const mongoose = require('mongoose')
+const cors = require('cors')
+
+const { authenticationMiddleware } = require('./middlewares/authentication')
 
 const authRouter = require('./routes/authentication')
 
@@ -15,6 +18,8 @@ mongoose.connect(process.env.MONGODB_URI).then(() => console.log(`MongoDB Connec
 
 // Middlewares
 app.use(express.json())
+app.use(cors())
+app.use(authenticationMiddleware())
 
 app.get('/', (req, res) => res.json({ status: 'Success' }))
 
