@@ -9,7 +9,7 @@ router.use(ensureAuthenticated(['admin']))
 
 router.get('/', controller.handleGetAllTheaters)
 
-router.get('/:id')
+router.get('/:id', controller.handleGetTheatreById)
 
 router.post('/', controller.handleCreateTheatre)
 

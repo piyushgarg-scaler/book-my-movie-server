@@ -11,6 +11,17 @@ const handleGetAllTheaters = async (req, res) => {
     return res.json({ status: 'success', data: { page, theatres } })
 }
 
+const handleGetTheatreById = async (req, res) => {
+    const id = req.params.id;
+    const theatre = await Theatre.findById(id);
+
+    if (!theatre) return res.status(404).json({ error: `Theatre with id ${id} not found!` })
+
+    return res.json({ status: 'success', data: { theatre } })
+
+}
+
+
 const handleCreateTheatre = async (req, res) => {
     const safeParseResult = validateCreateTheatrePayload(req.body)
 
@@ -26,4 +37,4 @@ const handleCreateTheatre = async (req, res) => {
 
 }
 
-module.exports = { handleCreateTheatre, handleGetAllTheaters }
+module.exports = { handleCreateTheatre, handleGetAllTheaters, handleGetTheatreById }
