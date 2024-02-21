@@ -1,4 +1,5 @@
 const MovieSchedule = require('../models/movieScheduleMapping');
+const Booking = require('../models/booking')
 const { validateCreateMovieSchedulePayload } = require('../lib/movieSchedule');
 
 const handleGetAllMovieSchedules = async (req, res) => {
@@ -32,4 +33,61 @@ const handleCreateMovieSchedule = async (req, res) => {
     }
 };
 
-module.exports = { handleCreateMovieSchedule, handleGetAllMovieSchedules }
+
+const handleGetAllBookings = async (req, res) => {
+    const allBookings = await Booking.aggregate([
+        {
+            '$lookup': {
+                'from': 'users',
+                'localField': 'userId',
+                'foreignField': '_id',
+                'as': 'user'
+            }
+        }, {
+            '$unwind': {
+                'path': '$user',
+                'preserveNullAndEmptyArrays': false
+            }
+        }, {
+            '$lookup': {
+                'from': 'movieschedules',
+                'localField': 'scheduleId',
+                'foreignField': '_id',
+                'as': 'schedule',
+                'pipeline': [
+                    {
+                        '$lookup': {
+                            'from': 'movies',
+                            'localField': 'movieId',
+                            'foreignField': '_id',
+                            'as': 'movie'
+                        }
+                    }, {
+                        '$lookup': {
+                            'from': 'theatres',
+                            'localField': 'theatreId',
+                            'foreignField': '_id',
+                            'as': 'theatre'
+                        }
+                    }, {
+                        '$unwind': {
+                            'path': '$movie'
+                        }
+                    }, {
+                        '$unwind': {
+                            'path': '$theatre'
+                        }
+                    }
+                ]
+            }
+        }, {
+            '$unwind': {
+                'path': '$schedule'
+            }
+        }
+    ])
+
+    return res.json({ data: { bookings: allBookings } })
+}
+
+module.exports = { handleCreateMovieSchedule, handleGetAllMovieSchedules, handleGetAllBookings }

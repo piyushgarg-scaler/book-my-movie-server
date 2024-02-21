@@ -6,6 +6,10 @@ const router = express.Router();
 
 router.get('/', controller.handleGetAllMovies)
 
+router.get('/:id/schedule', controller.handleGetMovieSchedule)
+
+router.get('/schedule/:id/book', ensureAuthenticated(), controller.handleCreateBookingOrder)
+
 router.get('/:id', controller.handleGetMovieById)
 
 router.post('/', ensureAuthenticated(['admin']), controller.handleCreateMovie)

@@ -8,6 +8,8 @@ router.use(ensureAuthenticated(['admin']));
 
 router.get('/', controller.handleGetAllMovieSchedules);
 
+router.get('/bookings', controller.handleGetAllBookings)
+
 router.get('/:id');
 
 router.post('/', controller.handleCreateMovieSchedule);
